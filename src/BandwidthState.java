@@ -13,7 +13,6 @@ public class BandwidthState {
 		t2 = 0;
 	}
 
-	
 	public BandwidthState(float lastBandwith, float lastTime) {
 		b0 = 0;
 		t0 = 0;
@@ -35,7 +34,9 @@ public class BandwidthState {
 
 	}
 
-	public float getExpectedBandwidth(float tp) {
+	public Float getExpectedBandwidth(float tp) {
+		if (t0 == 0)
+			return null;
 		float alpha0 = b0 / t0;
 		float alpha1 = alpha0 + b1 / (t1 - t0);
 		float alpha2 = alpha1 + b2 / ((t2 - t1) * (t2 - t0));

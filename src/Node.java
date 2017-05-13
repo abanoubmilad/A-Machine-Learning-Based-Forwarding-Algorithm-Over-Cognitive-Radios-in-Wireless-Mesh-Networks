@@ -74,30 +74,38 @@ public class Node {
 	public void receive(Message msg, float bandwidth, float time) {
 		switch (msg.getType()) {
 		case Message.TYPE_HELLO:
-			neighbours.add(new AbstractNode(msg.getSourceIP(), msg.getSourceGPS()));
-			BandwidthState state = ipStateMap.get(msg.getSourceIP());
+			boolean flag = false;
+			for (AbstractNode abstractNode : neighbours) {
+				if (abstractNode.getIp().equals(msg.getCarrierIP())) {
+					flag = true;
+					break;
+				}
+			}
+			if (!flag)
+				neighbours.add(new AbstractNode(msg.getCarrierIP(), msg.getCarrierGPS()));
+			BandwidthState state = ipStateMap.get(msg.getCarrierIP());
 			if (state == null) {
 				state = new BandwidthState();
-				ipStateMap.put(msg.getSourceIP(), state);
+				ipStateMap.put(msg.getCarrierIP(), state);
 			}
 			state.update(bandwidth, time);
 
-			SimLog.print("node ip:" + ip + " received hello from node ip:" + msg.getSourceIP() + " , gps:(x="
-					+ msg.getSourceGPS().getX() + ",y=" + msg.getSourceGPS().getY() + ") bandwidth:" + bandwidth
+			SimLog.print("node ip:" + ip + " received hello from node ip:" + msg.getCarrierIP() + " , gps:(x="
+					+ msg.getCarrierGPS().getX() + ",y=" + msg.getCarrierGPS().getY() + ") bandwidth:" + bandwidth
 					+ " time:" + time);
 			break;
 		case Message.TYPE_DATA:
-			state = ipStateMap.get(msg.getSourceIP());
+			state = ipStateMap.get(msg.getCarrierIP());
 			if (state == null) {
 				state = new BandwidthState();
-				ipStateMap.put(msg.getSourceIP(), state);
+				ipStateMap.put(msg.getCarrierIP(), state);
 			}
 			state.update(bandwidth, time);
 
-			Integer lastSeqNum = seqStateMap.get(msg.getSourceIP());
+			Integer lastSeqNum = seqStateMap.get(msg.getCarrierIP());
 			if (lastSeqNum != null && msg.getSeqNum() <= lastSeqNum)
 				return;
-			seqStateMap.put(msg.getSourceIP(), msg.getSeqNum());
+			seqStateMap.put(msg.getCarrierIP(), msg.getSeqNum());
 
 			if (msg.getDestinationIP().equals(ip)) {
 				deliverMsg(msg);

@@ -37,7 +37,7 @@ public class Mesh {
 			if (msg.getCarrierIP() != node.getIp()) {
 				Rayleigh ray = ipToipBandwidthMap.get(msg.getCarrierIP() + node.getIp());
 				if (ray == null) {
-					ray = new Rayleigh((float) (Math.random() * 100) + 10);
+					ray = new Rayleigh((float) (Math.random() * 10) + 10);
 					ipToipBandwidthMap.put(msg.getCarrierIP() + node.getIp(), ray);
 					ipToipBandwidthMap.put(node.getIp() + msg.getCarrierIP(), ray);
 				}
@@ -68,7 +68,7 @@ public class Mesh {
 				
 				Rayleigh ray = ipToipBandwidthMap.get(msg.getCarrierIP() + node.getIp());
 				if (ray == null) {
-					ray = new Rayleigh((float) (Math.random() * 100) + 10);
+					ray = new Rayleigh((float) (Math.random() * 10) + 10);
 					ipToipBandwidthMap.put(msg.getCarrierIP() + node.getIp(), ray);
 					ipToipBandwidthMap.put(node.getIp() + msg.getCarrierIP(), ray);
 				}
