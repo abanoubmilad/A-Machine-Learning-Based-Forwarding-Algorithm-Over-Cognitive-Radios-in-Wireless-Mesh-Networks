@@ -87,8 +87,8 @@ public class Main {
 		SimLog.print("-----------------------------------------------------------------------------");
 		SimLog.print(" ");
 
-		sender.sendMessageWithGPS(new Message(Message.TYPE_DATA, 1, sender.getIp(), sender.getGps(), receiver.getIp(),
-				receiver.getGps(), sender.getIp(), sender.getGps(), payLoad));
+		sender.sendMessageWithGPS(new Message(Message.TYPE_DATA, 1, sender.getIp(), sender.getGps(),
+				Timer.getInstance().getTime(), receiver.getIp(), receiver.getGps(), payLoad));
 
 	}
 

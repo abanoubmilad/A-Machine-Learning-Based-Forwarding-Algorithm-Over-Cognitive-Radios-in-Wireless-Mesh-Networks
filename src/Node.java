@@ -64,7 +64,7 @@ public class Node {
 	}
 
 	public void sendHello() {
-		floodMessage(new Message(Message.TYPE_HELLO, 0, ip, gps, null, null, null, null, null));
+		floodMessage(new Message(Message.TYPE_HELLO, 0, ip, gps, Timer.getInstance().getTime(), null, null, null));
 	}
 
 	public void sendMessageWithGPS(Message msg) {
@@ -102,6 +102,7 @@ public class Node {
 			if (msg.getDestinationIP().equals(ip)) {
 				deliverMsg(msg);
 			} else {
+				msg.setCarrierTime(time);
 				if (msg.getDestinationGPS() != null)
 					floodMessageWithGPS(msg);
 
