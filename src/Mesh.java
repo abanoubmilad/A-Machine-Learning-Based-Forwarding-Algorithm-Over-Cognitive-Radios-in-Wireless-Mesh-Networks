@@ -47,7 +47,7 @@ public class Mesh {
 		}
 	}
 
-	public void floodWithGPS(Message msg) {
+	private void floodWithGPS(Message msg) {
 		SimLog.print("");
 
 		SimLog.print("node ip:" + msg.getCarrierIP() + " , gps:(x=" + msg.getCarrierGPS().getX() + ",y="
@@ -65,7 +65,7 @@ public class Mesh {
 		for (Node node : nodes) {
 			if (node.getGps().getX() >= minX && node.getGps().getX() <= maxX && node.getGps().getY() >= minY
 					&& node.getGps().getY() <= maxY && msg.getCarrierIP() != node.getIp()) {
-				
+
 				Rayleigh ray = ipToipBandwidthMap.get(msg.getCarrierIP() + node.getIp());
 				if (ray == null) {
 					ray = new Rayleigh((float) (Math.random() * 10) + 10);
@@ -74,9 +74,7 @@ public class Mesh {
 				}
 				float bandwidth = ray.getNextBandWidth();
 				node.receive(msg, bandwidth, msg.getCarrierTime() + Message.MSG_PAYLOAD_SIZE / bandwidth);
-				
-				
-				
+
 				SimLog.print("node ip:" + node.getIp() + " , gps:(x=" + node.getGps().getX() + ",y="
 						+ node.getGps().getY() + " was located in flooding region");
 			} else {
@@ -84,6 +82,65 @@ public class Mesh {
 						+ node.getGps().getY() + " was not located in flooding region");
 			}
 		}
+	}
+
+	public void floodWithGPSOptimal(Message msg) {
+		SimLog.print("");
+
+		SimLog.print("node ip:" + msg.getCarrierIP() + " , gps:(x=" + msg.getCarrierGPS().getX() + ",y="
+				+ msg.getCarrierGPS().getY() + ") flooded the mesh to reach destination node ip:"
+				+ msg.getDestinationIP() + " , gps:(x=" + msg.getDestinationGPS().getX() + ",y="
+				+ msg.getDestinationGPS().getY() + ")");
+		double minX = Math.min(msg.getCarrierGPS().getX(), msg.getDestinationGPS().getX());
+		double maxX = Math.max(msg.getCarrierGPS().getX(), msg.getDestinationGPS().getX());
+		double minY = Math.min(msg.getCarrierGPS().getY(), msg.getDestinationGPS().getY());
+		double maxY = Math.max(msg.getCarrierGPS().getY(), msg.getDestinationGPS().getY());
+
+		SimLog.print(
+				"flooding region is reduced. region from x " + minX + " : " + maxX + " and y " + minY + " : " + maxY);
+
+		float maxBandwidth = -1;
+		Node maxNode = null;
+
+		for (Node node : nodes) {
+			if (node.getGps().getX() >= minX && node.getGps().getX() <= maxX && node.getGps().getY() >= minY
+					&& node.getGps().getY() <= maxY && msg.getCarrierIP() != node.getIp()) {
+
+				BandwidthState state = node.getIpStateMap().get(msg.getCarrierIP());
+				if (state == null)
+					continue;
+				Float expected = state.getExpectedBandwidth(msg.getCarrierTime());
+				if (expected == null)
+					continue;
+				if (expected > maxBandwidth) {
+					maxBandwidth = expected;
+					maxNode = node;
+				}
+
+			} else {
+				SimLog.print("node ip:" + node.getIp() + " , gps:(x=" + node.getGps().getX() + ",y="
+						+ node.getGps().getY() + " was not located in flooding region");
+			}
+		}
+		if (maxNode != null) {
+			Rayleigh ray = ipToipBandwidthMap.get(msg.getCarrierIP() + maxNode.getIp());
+			if (ray == null) {
+				ray = new Rayleigh((float) (Math.random() * 10) + 10);
+				ipToipBandwidthMap.put(msg.getCarrierIP() + maxNode.getIp(), ray);
+				ipToipBandwidthMap.put(maxNode.getIp() + msg.getCarrierIP(), ray);
+			}
+			float bandwidth = ray.getNextBandWidth();
+			maxNode.receive(msg, bandwidth, msg.getCarrierTime() + Message.MSG_PAYLOAD_SIZE / bandwidth);
+			SimLog.print("############################################################");
+			SimLog.print("node ip:" + maxNode.getIp() + " , gps:(x=" + maxNode.getGps().getX() + ",y="
+					+ maxNode.getGps().getY() + " was located in flooding region with optimal expected bandwidth:"
+					+ maxBandwidth);
+			SimLog.print("where actual bandwidth was :" + bandwidth);
+			SimLog.print("############################################################");
+		} else {
+			floodWithGPS(msg);
+		}
+
 	}
 
 	public void generateNodes() {

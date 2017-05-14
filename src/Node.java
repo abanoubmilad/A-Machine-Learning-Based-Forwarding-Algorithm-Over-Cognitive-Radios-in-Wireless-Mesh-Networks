@@ -17,6 +17,30 @@ public class Node {
 		seqStateMap = new HashMap<>();
 	}
 
+	public ArrayList<Mesh> getMeshes() {
+		return meshes;
+	}
+
+	public void setMeshes(ArrayList<Mesh> meshes) {
+		this.meshes = meshes;
+	}
+
+	public HashMap<String, BandwidthState> getIpStateMap() {
+		return ipStateMap;
+	}
+
+	public void setIpStateMap(HashMap<String, BandwidthState> ipStateMap) {
+		this.ipStateMap = ipStateMap;
+	}
+
+	public HashMap<String, Integer> getSeqStateMap() {
+		return seqStateMap;
+	}
+
+	public void setSeqStateMap(HashMap<String, Integer> seqStateMap) {
+		this.seqStateMap = seqStateMap;
+	}
+
 	public Node(String ip, GPS gps) {
 		this.ip = ip;
 		this.gps = gps;
@@ -59,7 +83,7 @@ public class Node {
 
 	public void floodMessageWithGPS(Message msg) {
 		for (Mesh mesh : meshes) {
-			mesh.floodWithGPS(msg);
+			mesh.floodWithGPSOptimal(msg);
 		}
 	}
 

@@ -37,11 +37,22 @@ public class BandwidthState {
 	public Float getExpectedBandwidth(float tp) {
 		if (t0 == 0)
 			return null;
+
+		SimLog.print("****************************************************************************");
+		SimLog.print("calc expected bandwidth:");
+		SimLog.print("				b0:" + b0 + " t0:" + t0);
+		SimLog.print("				b1:" + b1 + " t1:" + t1);
+		SimLog.print("				b2:" + b2 + " t2:" + t2);
+
 		float alpha0 = b0 / t0;
 		float alpha1 = alpha0 + b1 / (t1 - t0);
 		float alpha2 = alpha1 + b2 / ((t2 - t1) * (t2 - t0));
 
-		return alpha0 + (alpha1 + alpha2 * (tp - t1)) * (tp - t0);
+		float expexted = alpha0 + (alpha1 + alpha2 * (tp - t1)) * (tp - t0);
+
+		SimLog.print("expected -> b:" + expexted + " t:" + tp);
+		SimLog.print("****************************************************************************");
+		return expexted;
 	}
 
 }
