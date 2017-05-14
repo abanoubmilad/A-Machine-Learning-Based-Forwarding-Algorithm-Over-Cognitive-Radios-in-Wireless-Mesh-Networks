@@ -95,7 +95,7 @@ public class Node {
 		floodMessageWithGPS(msg);
 	}
 
-	public void receive(Message msg, float bandwidth, float time) {
+	public void receive(Message msg, float bandwidth, float receiveTime) {
 		switch (msg.getType()) {
 		case Message.TYPE_HELLO:
 			boolean flag = false;
@@ -112,11 +112,11 @@ public class Node {
 				state = new BandwidthState();
 				ipStateMap.put(msg.getCarrierIP(), state);
 			}
-			state.update(bandwidth, time);
+			state.update(bandwidth, receiveTime);
 
 			SimLog.print("node ip:" + ip + " received hello from node ip:" + msg.getCarrierIP() + " , gps:(x="
 					+ msg.getCarrierGPS().getX() + ",y=" + msg.getCarrierGPS().getY() + ") bandwidth:" + bandwidth
-					+ " time:" + time);
+					+ " time:" + receiveTime);
 			break;
 		case Message.TYPE_DATA:
 			state = ipStateMap.get(msg.getCarrierIP());
@@ -124,7 +124,7 @@ public class Node {
 				state = new BandwidthState();
 				ipStateMap.put(msg.getCarrierIP(), state);
 			}
-			state.update(bandwidth, time);
+			state.update(bandwidth, receiveTime);
 
 			Integer lastSeqNum = seqStateMap.get(msg.getCarrierIP());
 			if (lastSeqNum != null && msg.getSeqNum() <= lastSeqNum)
@@ -134,13 +134,16 @@ public class Node {
 			if (msg.getDestinationIP().equals(ip)) {
 				deliverMsg(msg);
 			} else {
-				msg.setCarrierTime(time);
-				if (msg.getDestinationGPS() != null)
-					floodMessageWithGPS(msg);
+				Message cloned = msg.getCloned(msg);
+				cloned.setCarrierTime(receiveTime);
+				cloned.setCarrierIP(ip);
+				cloned.setCarrierGPS(gps);
+				if (cloned.getDestinationGPS() != null)
+					floodMessageWithGPS(cloned);
 
 				else
 
-					floodMessage(msg);
+					floodMessage(cloned);
 			}
 			break;
 

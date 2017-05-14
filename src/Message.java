@@ -70,7 +70,7 @@ public class Message {
 	}
 
 	public Message(int type, int seqNum, String sourceIP, GPS sourceGPS, float createdTime, String destinationIP,
-			GPS destinationGPS,String payLoad) {
+			GPS destinationGPS, String payLoad) {
 		this.type = type;
 		this.seqNum = seqNum;
 		this.sourceIP = sourceIP;
@@ -155,4 +155,10 @@ public class Message {
 		this.destinationGPS = destinationGPS;
 	}
 
+	public Message getCloned(Message msg) {
+
+		return new Message(msg.getType(), msg.getSeqNum(), msg.getSourceIP(), msg.getSourceGPS(), msg.getCreatedTime(),
+				msg.getDestinationIP(), msg.getDestinationGPS(), msg.getPayLoad());
+
+	}
 }
