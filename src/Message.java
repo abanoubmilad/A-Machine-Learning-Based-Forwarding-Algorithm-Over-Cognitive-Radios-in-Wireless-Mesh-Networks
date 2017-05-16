@@ -83,6 +83,19 @@ public class Message {
 		this.carrierTime = createdTime;
 		this.payLoad = payLoad;
 	}
+	public Message(Message msg) {
+		this.type = msg.getType();
+		this.seqNum = msg.getSeqNum();
+		this.sourceIP = msg.getSourceIP();
+		this.sourceGPS = msg.getSourceGPS();
+		this.createdTime = msg.getCreatedTime();
+		this.destinationIP = msg.getDestinationIP();
+		this.destinationGPS = msg.getDestinationGPS();
+		this.carrierIP = msg.getCarrierIP();
+		this.carrierGPS = new GPS(msg.getCarrierGPS().getX(), msg.getCarrierGPS().getY());
+		this.carrierTime = msg.getCarrierTime();
+		this.payLoad = msg.getPayLoad();
+	}
 
 	// public Message(int type, int seqNum, String sourceIP, GPS sourceGPS,
 	// String destinationIP, GPS destinationGPS,

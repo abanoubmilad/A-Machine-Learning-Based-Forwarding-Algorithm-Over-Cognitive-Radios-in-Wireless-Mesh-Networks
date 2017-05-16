@@ -134,7 +134,7 @@ public class Node {
 			if (msg.getDestinationIP().equals(ip)) {
 				deliverMsg(msg);
 			} else {
-				Message cloned = msg.getCloned(msg);
+				Message cloned = new Message(msg);
 				cloned.setCarrierTime(receiveTime);
 				cloned.setCarrierIP(ip);
 				cloned.setCarrierGPS(gps);

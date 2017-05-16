@@ -1,42 +1,50 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class BandwidthState {
 
-	private float b0, b1, b2;
-	private float t0, t1, t2;
+	// private float b0, b1, b2;
+	// private float t0, t1, t2;
+	private ArrayList<State> states;
 
 	public BandwidthState() {
-		b0 = 0;
-		t0 = 0;
-		b1 = 0;
-		t1 = 0;
-		b2 = 0;
-		t2 = 0;
+		states = new ArrayList<>(3);
 	}
 
-	public BandwidthState(float lastBandwith, float lastTime) {
-		b0 = 0;
-		t0 = 0;
-		b1 = 0;
-		t1 = 0;
-		this.b2 = lastBandwith;
-		this.t2 = lastTime;
-	}
+	// public BandwidthState(float lastBandwith, float lastTime) {
+	// if(states.size()>2)
+	// states.remove(0);
+	// states.add(new State(lastBandwith, lastTime));
+	// }
 
-	public void update(float newBandwidth, float time) {
-		b0 = b1;
-		t0 = t1;
-
-		b1 = b2;
-		t1 = t2;
-
-		b2 = newBandwidth;
-		t2 = time;
+	public void update(float bandwith, float time) {
+		if (states.size() > 2)
+			states.remove(0);
+		states.add(new State(bandwith, time));
 
 	}
 
 	public Float getExpectedBandwidth(float tp) {
-		if (t0 == 0)
+		if (states.size() != 3)
 			return null;
+
+		State[] temp = { states.get(0), states.get(1), states.get(2) };
+		Arrays.sort(temp, new Comparator<State>() {
+			@Override
+			public int compare(State o1, State o2) {
+				return (int) (o1.getTime() - o2.getTime());
+			}
+		});
+
+		float b0 = temp[0].getBandwidth();
+		float t0 = temp[0].getTime();
+
+		float b1 = temp[1].getBandwidth();
+		float t1 = temp[1].getTime();
+
+		float b2 = temp[2].getBandwidth();
+		float t2 = temp[2].getTime();
 
 		SimLog.print("****************************************************************************");
 		SimLog.print("calc expected bandwidth:");
@@ -55,4 +63,30 @@ public class BandwidthState {
 		return expexted;
 	}
 
+	private class State {
+		private float bandwidth;
+		private float time;
+
+		public float getBandwidth() {
+			return bandwidth;
+		}
+
+		public void setBandwidth(float bandwidth) {
+			this.bandwidth = bandwidth;
+		}
+
+		public float getTime() {
+			return time;
+		}
+
+		public void setTime(float time) {
+			this.time = time;
+		}
+
+		public State(float bandwidth, float time) {
+			this.bandwidth = bandwidth;
+			this.time = time;
+		}
+
+	}
 }
