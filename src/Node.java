@@ -88,7 +88,7 @@ public class Node {
 	}
 
 	public void sendHello() {
-		floodMessage(new Message(Message.TYPE_HELLO, 0, ip, gps, Timer.getInstance().getTime(), null, null, null));
+		floodMessage(new Message(Message.TYPE_HELLO, 0, ip, gps, 0, null, null, null));
 	}
 
 	public void sendMessageWithGPS(Message msg) {

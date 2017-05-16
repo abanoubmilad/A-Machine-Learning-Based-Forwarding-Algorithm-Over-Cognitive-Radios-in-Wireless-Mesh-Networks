@@ -61,11 +61,11 @@ public class Mesh {
 
 		SimLog.print(
 				"flooding region is reduced. region from x " + minX + " : " + maxX + " and y " + minY + " : " + maxY);
-
+		boolean flag = false;
 		for (Node node : nodes) {
 			if (node.getGps().getX() >= minX && node.getGps().getX() <= maxX && node.getGps().getY() >= minY
 					&& node.getGps().getY() <= maxY && msg.getCarrierIP() != node.getIp()) {
-
+				flag = true;
 				Rayleigh ray = ipToipBandwidthMap.get(msg.getCarrierIP() + node.getIp());
 				if (ray == null) {
 					ray = new Rayleigh((float) (Math.random() * 10) + 10);
@@ -76,12 +76,14 @@ public class Mesh {
 				node.receive(msg, bandwidth, msg.getCarrierTime() + Message.MSG_PAYLOAD_SIZE / bandwidth);
 
 				SimLog.print("node ip:" + node.getIp() + " , gps:(x=" + node.getGps().getX() + ",y="
-						+ node.getGps().getY() + " was located in flooding region");
+						+ node.getGps().getY() + " was located in reduced flooding region");
 			} else {
 				SimLog.print("node ip:" + node.getIp() + " , gps:(x=" + node.getGps().getX() + ",y="
-						+ node.getGps().getY() + " was not located in flooding region");
+						+ node.getGps().getY() + " was not located in reduced flooding region");
 			}
 		}
+		if(!flag)
+			flood(msg);
 	}
 
 	public void floodWithGPSOptimal(Message msg) {
